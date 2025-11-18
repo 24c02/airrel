@@ -10,7 +10,7 @@ module Airrel
         build_predicate(field_name, value)
       end
 
-      formulas.size == 1 ? formulas.first : "AND(#{formulas.join(', ')})"
+      formulas.size == 1 ? formulas.first : "AND(#{formulas.join(", ")})"
     end
 
     def build_predicate(field, value)
@@ -34,7 +34,7 @@ module Airrel
       when Array
         # IN query - use OR
         or_conditions = value.map { |v| build_predicate(field, v) }
-        "OR(#{or_conditions.join(', ')})"
+        "OR(#{or_conditions.join(", ")})"
       else
         # fallback - convert to string and escape
         "{#{field}} = #{escape_string(value.to_s)}"
@@ -46,7 +46,7 @@ module Airrel
     # so we need to escape backslashes first, then quotes
     def escape_string(str)
       # escape backslashes first (\ -> \\), then quotes (' -> \', " -> \")
-      escaped = str.to_s.gsub('\\', '\\\\\\\\').gsub(/['"]/, '\\\\\0')
+      escaped = str.to_s.gsub("\\", "\\\\\\\\").gsub(/['"]/, '\\\\\0')
       "'#{escaped}'"
     end
 
@@ -70,9 +70,9 @@ module Airrel
 
     # helper methods for building formulas programmatically
 
-    def all(*formulas) = "AND(#{formulas.join(', ')})"
+    def all(*formulas) = "AND(#{formulas.join(", ")})"
 
-    def any(*formulas) = "OR(#{formulas.join(', ')})"
+    def any(*formulas) = "OR(#{formulas.join(", ")})"
 
     def none(formula) = "NOT(#{formula})"
 

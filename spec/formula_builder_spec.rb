@@ -59,7 +59,7 @@ RSpec.describe Airrel::FormulaBuilder do
     end
 
     it "handles arrays as OR conditions" do
-      result = described_class.build_predicate("role", ["admin", "moderator", "guest"])
+      result = described_class.build_predicate("role", %w[admin moderator guest])
       expect(result).to eq("OR({role} = 'admin', {role} = 'moderator', {role} = 'guest')")
     end
 
@@ -83,7 +83,7 @@ RSpec.describe Airrel::FormulaBuilder do
     end
 
     it "escapes both single and double quotes" do
-      expect(described_class.escape_string(%q{It's a "test"})).to eq(%q{'It\\'s a \\"test\\"'})
+      expect(described_class.escape_string(%q(It's a "test"))).to eq(%q('It\\'s a \\"test\\"'))
     end
 
     it "handles empty strings" do

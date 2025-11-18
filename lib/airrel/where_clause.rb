@@ -29,7 +29,7 @@ module Airrel
       return nil if @predicates.empty?
       return @predicates.first if @predicates.size == 1
 
-      "AND(#{@predicates.join(', ')})"
+      "AND(#{@predicates.join(", ")})"
     end
 
     def inspect = @predicates.inspect

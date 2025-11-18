@@ -17,7 +17,7 @@ module Airrel
     end
 
     # chaining methods (return new relations)
-    
+
     def where(conditions) = spawn.where!(conditions)
 
     def where!(conditions)
@@ -71,7 +71,7 @@ module Airrel
       if @order_values.empty?
         raise ArgumentError, "last requires an order to be specified (use .order(:created_at) or similar)"
       end
-      
+
       reversed = reverse_order
       if limit
         # only load what we need
@@ -107,21 +107,22 @@ module Airrel
       end
     end
 
-    def find_in_batches(batch_size: 100, &block)
+    def find_in_batches(batch_size: 100)
       current_offset = 0
-      
+
       loop do
         # create a new relation with limit and offset
         batch_relation = spawn
         batch_relation.instance_variable_set(:@limit_value, batch_size)
         batch_relation.instance_variable_set(:@offset_value, current_offset)
-        
+
         batch = batch_relation.to_a
         break if batch.empty?
-        
+
         yield batch
-        
+
         break if batch.size < batch_size # last batch
+
         current_offset += batch_size
       end
     end
@@ -131,7 +132,7 @@ module Airrel
 
     def empty? = !any?
 
-    # optimize: only load 1 record to check existence
+    # OPTIMIZE: only load 1 record to check existence
     def any? = limit(1).load_records.any?
 
     def exists? = any?
@@ -142,7 +143,7 @@ module Airrel
       entries = load_records.take(11).map!(&:inspect)
       entries[10] = "..." if entries.size == 11
 
-      "#<#{self.class.name} [#{entries.join(', ')}]>"
+      "#<#{self.class.name} [#{entries.join(", ")}]>"
     end
 
     def to_airtable = to_airtable_params
@@ -177,7 +178,7 @@ module Airrel
 
     protected
 
-    def spawn = clone.tap { |r| r.reset }
+    def spawn = clone.tap(&:reset)
 
     def load_records
       load unless loaded?
@@ -192,25 +193,23 @@ module Airrel
 
     def to_airtable_params
       params = {}
-      
+
       # filter
-      if @where_clause.any?
-        params[:filter] = @where_clause.to_airtable_formula
-      end
+      params[:filter] = @where_clause.to_airtable_formula if @where_clause.any?
 
       # sort
       if @order_values.any?
-        params[:sort] = @order_values.map { |field, direction|
+        params[:sort] = @order_values.map do |field, direction|
           { field: field.to_s, direction: direction.to_s }
-        }
+        end
       end
 
       # limit
       params[:max_records] = @limit_value if @limit_value
-      
+
       # offset (airtable calls it offset in pagination)
       params[:offset] = @offset_value if @offset_value
-      
+
       # pagination control
       params[:paginate] = @paginate if defined?(@paginate)
 

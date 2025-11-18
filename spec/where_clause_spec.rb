@@ -26,15 +26,15 @@ RSpec.describe Airrel::WhereClause do
       clause = described_class.new
       merged = clause.merge(role: "admin").merge(active: true)
       expect(merged.predicates).to eq([
-        "{role} = 'admin'",
-        "{active} = TRUE()"
-      ])
+                                        "{role} = 'admin'",
+                                        "{active} = TRUE()"
+                                      ])
     end
 
     it "is immutable" do
       original = described_class.new
       merged = original.merge(role: "admin")
-      
+
       expect(original.predicates).to be_empty
       expect(merged.predicates).to eq(["{role} = 'admin'"])
     end

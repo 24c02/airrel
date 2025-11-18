@@ -11,8 +11,8 @@ RSpec.describe Airrel::Relation do
         []
       end
 
-      def self.last_params
-        @last_params
+      class << self
+        attr_reader :last_params
       end
 
       def self.find(id)
@@ -33,7 +33,7 @@ RSpec.describe Airrel::Relation do
     it "is immutable" do
       original = relation.where(role: "admin")
       original.where(active: true)
-      
+
       expect(original.to_airtable[:filter]).to eq("{role} = 'admin'")
     end
 
@@ -67,17 +67,17 @@ RSpec.describe Airrel::Relation do
     it "accepts a hash" do
       result = relation.order(name: :desc, age: :asc)
       expect(result.to_airtable[:sort]).to eq([
-        { field: "name", direction: "desc" },
-        { field: "age", direction: "asc" }
-      ])
+                                                { field: "name", direction: "desc" },
+                                                { field: "age", direction: "asc" }
+                                              ])
     end
 
     it "chains multiple order calls" do
       result = relation.order(:name).order(:age)
       expect(result.to_airtable[:sort]).to eq([
-        { field: "name", direction: "asc" },
-        { field: "age", direction: "asc" }
-      ])
+                                                { field: "name", direction: "asc" },
+                                                { field: "age", direction: "asc" }
+                                              ])
     end
 
     it "normalizes direction strings" do
@@ -118,7 +118,7 @@ RSpec.describe Airrel::Relation do
 
     it "executes query when iterating" do
       expect(table_class).to receive(:records).and_return([])
-      relation.where(role: "admin").each { |r| r }
+      relation.where(role: "admin").each { |r| }
     end
 
     it "executes query when calling to_a" do
@@ -152,16 +152,16 @@ RSpec.describe Airrel::Relation do
         expect(params[:max_records]).to eq(3)
         [1, 2, 3]
       end
-      
+
       expect(relation.first(3)).to eq([1, 2, 3])
     end
   end
 
   describe "#last" do
     it "requires an order to be specified" do
-      expect {
+      expect do
         relation.last
-      }.to raise_error(ArgumentError, /last requires an order/)
+      end.to raise_error(ArgumentError, /last requires an order/)
     end
 
     it "reverses order and gets first" do
@@ -170,7 +170,7 @@ RSpec.describe Airrel::Relation do
         expect(params[:sort]).to eq([{ field: "name", direction: "desc" }])
         [1, 2, 3]
       end
-      
+
       result = relation.order(:name).last
       expect(result).to eq(1) # first item of the reversed array
     end
@@ -204,9 +204,10 @@ RSpec.describe Airrel::Relation do
   describe "#find_by!" do
     it "raises if not found" do
       allow(table_class).to receive(:records).and_return([])
-      expect {
+      # would be RecordNotFoundError in norairrecord context
+      expect do
         relation.find_by!(email: "test@example.com")
-      }.to raise_error(StandardError) # would be RecordNotFoundError in norairrecord context
+      end.to raise_error(StandardError)
     end
   end
 
@@ -220,19 +221,19 @@ RSpec.describe Airrel::Relation do
   describe "#to_airtable_params" do
     it "builds complete params hash" do
       result = relation
-        .where(role: "admin")
-        .where(active: true)
-        .order(name: :asc)
-        .limit(10)
-        .offset(5)
-        .to_airtable
+               .where(role: "admin")
+               .where(active: true)
+               .order(name: :asc)
+               .limit(10)
+               .offset(5)
+               .to_airtable
 
       expect(result).to eq({
-        filter: "AND({role} = 'admin', {active} = TRUE())",
-        sort: [{ field: "name", direction: "asc" }],
-        max_records: 10,
-        offset: 5
-      })
+                             filter: "AND({role} = 'admin', {active} = TRUE())",
+                             sort: [{ field: "name", direction: "asc" }],
+                             max_records: 10,
+                             offset: 5
+                           })
     end
 
     it "omits empty params" do

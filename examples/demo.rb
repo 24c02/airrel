@@ -16,10 +16,10 @@ end
 # basic chaining
 puts "=== basic chaining ==="
 relation = Airrel::Relation.new(User)
-  .where(role: "admin")
-  .where(active: true)
-  .order(created_at: :desc)
-  .limit(10)
+                           .where(role: "admin")
+                           .where(active: true)
+                           .order(created_at: :desc)
+                           .limit(10)
 
 puts relation.to_airtable
 puts
@@ -28,7 +28,7 @@ puts
 puts "=== hash to formula ==="
 puts Airrel::FormulaBuilder.hash_to_formula(email: "test@example.com", age: 25)
 puts Airrel::FormulaBuilder.hash_to_formula(age: 18..65)
-puts Airrel::FormulaBuilder.hash_to_formula(role: ["admin", "moderator"])
+puts Airrel::FormulaBuilder.hash_to_formula(role: %w[admin moderator])
 puts Airrel::FormulaBuilder.hash_to_formula(deleted_at: nil)
 puts
 

@@ -46,15 +46,15 @@ RSpec.describe "Multi-select field helpers" do
           []
         end
 
-        def self.last_params
-          @last_params
+        class << self
+          attr_reader :last_params
         end
       end
     end
 
     it "works in where clauses" do
       relation = Airrel::Relation.new(table_class)
-        .where(builder.contains("Roles", "admin"))
+                                 .where(builder.contains("Roles", "admin"))
 
       relation.to_a
 
@@ -63,8 +63,8 @@ RSpec.describe "Multi-select field helpers" do
 
     it "chains with other conditions" do
       relation = Airrel::Relation.new(table_class)
-        .where(active: true)
-        .where(builder.contains("Roles", "admin"))
+                                 .where(active: true)
+                                 .where(builder.contains("Roles", "admin"))
 
       relation.to_a
 
@@ -74,7 +74,7 @@ RSpec.describe "Multi-select field helpers" do
 
     it "combines with contains_any" do
       relation = Airrel::Relation.new(table_class)
-        .where(builder.contains_any("Roles", "admin", "moderator", "guest"))
+                                 .where(builder.contains_any("Roles", "admin", "moderator", "guest"))
 
       relation.to_a
 
