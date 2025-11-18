@@ -70,62 +70,34 @@ module Airrel
 
     # helper methods for building formulas programmatically
 
-    def all(*formulas)
-      "AND(#{formulas.join(', ')})"
-    end
+    def all(*formulas) = "AND(#{formulas.join(', ')})"
 
-    def any(*formulas)
-      "OR(#{formulas.join(', ')})"
-    end
+    def any(*formulas) = "OR(#{formulas.join(', ')})"
 
-    def none(formula)
-      "NOT(#{formula})"
-    end
+    def none(formula) = "NOT(#{formula})"
 
-    def eq(field, value)
-      build_predicate(field, value)
-    end
+    def eq(field, value) = build_predicate(field, value)
 
-    def neq(field, value)
-      none(eq(field, value))
-    end
+    def neq(field, value) = none(eq(field, value))
 
-    def gt(field, value)
-      "{#{field}} > #{value}"
-    end
+    def gt(field, value) = "{#{field}} > #{value}"
 
-    def gte(field, value)
-      "{#{field}} >= #{value}"
-    end
+    def gte(field, value) = "{#{field}} >= #{value}"
 
-    def lt(field, value)
-      "{#{field}} < #{value}"
-    end
+    def lt(field, value) = "{#{field}} < #{value}"
 
-    def lte(field, value)
-      "{#{field}} <= #{value}"
-    end
+    def lte(field, value) = "{#{field}} <= #{value}"
 
-    def blank(field)
-      "{#{field}} = BLANK()"
-    end
+    def blank(field) = "{#{field}} = BLANK()"
 
-    def present(field)
-      none(blank(field))
-    end
+    def present(field) = none(blank(field))
 
-    def find(field, search_string)
-      "FIND(#{escape_string(search_string)}, {#{field}})"
-    end
+    def find(field, search_string) = "FIND(#{escape_string(search_string)}, {#{field}})"
 
-    def search(field, search_string)
-      "SEARCH(#{escape_string(search_string)}, {#{field}})"
-    end
+    def search(field, search_string) = "SEARCH(#{escape_string(search_string)}, {#{field}})"
 
     # for multi-select fields (checks if array contains value)
-    def contains(field, value)
-      "FIND(#{escape_string(value.to_s)}, {#{field}})"
-    end
+    def contains(field, value) = "FIND(#{escape_string(value.to_s)}, {#{field}})"
 
     # check if multi-select contains ANY of the values
     def contains_any(field, *values)

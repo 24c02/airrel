@@ -23,9 +23,7 @@ module Airrel
       WhereClause.new(@predicates + new_predicates)
     end
 
-    def any?
-      @predicates.any?
-    end
+    def any? = @predicates.any?
 
     def to_airtable_formula
       return nil if @predicates.empty?
@@ -34,8 +32,6 @@ module Airrel
       "AND(#{@predicates.join(', ')})"
     end
 
-    def inspect
-      @predicates.inspect
-    end
+    def inspect = @predicates.inspect
   end
 end

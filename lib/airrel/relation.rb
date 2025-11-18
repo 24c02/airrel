@@ -18,45 +18,35 @@ module Airrel
 
     # chaining methods (return new relations)
     
-    def where(conditions)
-      spawn.where!(conditions)
-    end
+    def where(conditions) = spawn.where!(conditions)
 
     def where!(conditions)
       @where_clause = @where_clause.merge(conditions)
       self
     end
 
-    def order(*args)
-      spawn.order!(*args)
-    end
+    def order(*args) = spawn.order!(*args)
 
     def order!(*args)
       @order_values += parse_order_args(args)
       self
     end
 
-    def limit(value)
-      spawn.limit!(value)
-    end
+    def limit(value) = spawn.limit!(value)
 
     def limit!(value)
       @limit_value = value
       self
     end
 
-    def offset(value)
-      spawn.offset!(value)
-    end
+    def offset(value) = spawn.offset!(value)
 
     def offset!(value)
       @offset_value = value
       self
     end
 
-    def reorder(*args)
-      spawn.reorder!(*args)
-    end
+    def reorder(*args) = spawn.reorder!(*args)
 
     def reorder!(*args)
       @order_values = parse_order_args(args)
@@ -92,13 +82,9 @@ module Airrel
       end
     end
 
-    def find(id)
-      klass.find(id)
-    end
+    def find(id) = klass.find(id)
 
-    def find_by(conditions)
-      where(conditions).first
-    end
+    def find_by(conditions) = where(conditions).first
 
     def find_by!(conditions)
       # Raise error class that will be defined by the consumer (norairrecord)
@@ -106,19 +92,13 @@ module Airrel
       find_by(conditions) || raise(error_class, "Record not found")
     end
 
-    def all
-      spawn
-    end
+    def all = spawn
 
-    def to_a
-      load_records
-    end
+    def to_a = load_records
 
     alias to_ary to_a
 
-    def each(&block)
-      load_records.each(&block)
-    end
+    def each(&block) = load_records.each(&block)
 
     # batch iteration for large result sets
     def find_each(batch_size: 100, &block)
@@ -146,24 +126,15 @@ module Airrel
       end
     end
 
-    def count
-      # airtable doesn't have a count API, but we can optimize by limiting fields
-      # or using exists? check for any?
-      load_records.size
-    end
+    # airtable doesn't have a count API >:-/ we gotta paginate through EVERYTHING...
+    def count = load_records.size
 
-    def empty?
-      !any?
-    end
+    def empty? = !any?
 
-    def any?
-      # optimize: only load 1 record to check existence
-      limit(1).load_records.any?
-    end
-    
-    def exists?
-      any?
-    end
+    # optimize: only load 1 record to check existence
+    def any? = limit(1).load_records.any?
+
+    def exists? = any?
 
     # inspection
 
@@ -174,13 +145,9 @@ module Airrel
       "#<#{self.class.name} [#{entries.join(', ')}]>"
     end
 
-    def to_airtable
-      to_airtable_params
-    end
-    
-    def to_sql
-      to_airtable_params.inspect
-    end
+    def to_airtable = to_airtable_params
+
+    def to_sql = to_airtable_params.inspect
 
     # execution
 
@@ -194,9 +161,7 @@ module Airrel
       load
     end
 
-    def loaded?
-      @loaded
-    end
+    def loaded? = @loaded
 
     def reset
       @loaded = false
@@ -212,9 +177,7 @@ module Airrel
 
     protected
 
-    def spawn
-      clone.tap { |r| r.reset }
-    end
+    def spawn = clone.tap { |r| r.reset }
 
     def load_records
       load unless loaded?
